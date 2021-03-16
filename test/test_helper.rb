@@ -1,20 +1,19 @@
 require 'minitest/autorun'
 require 'minitest/pride'
+require 'webmock/minitest'
 require 'uri'
 require 'json'
-require 'fakeweb'
+# require 'fakeweb'
 
 require 'sailthru'
-
-FakeWeb.allow_net_connect = false
 
 class Minitest::Test
 
   include Sailthru::Helpers
 
-  def setup
-    FakeWeb.clean_registry
-  end
+  # def setup
+  #   FakeWeb.clean_registry
+  # end
 
   def fixture_file(filename)
     return '' if filename == ''
@@ -35,25 +34,33 @@ class Minitest::Test
   end
 
   def stub_get(url, filename, headers={})
-    options = { :body => fixture_file(filename), :content_type => 'application/json' }
-    options.merge!(headers)
-    FakeWeb.register_uri(:get, URI.parse(url), options)
+    stub_request(:get, URI.parse(url)).
+      with(body: fixture_file(filename), headers: { :content_type => 'application/json' })
   end
 
   def stub_delete(url, filename, headers={})
-    options = { :body => fixture_file(filename), :content_type => 'application/json' }
-    options.merge!(headers)
-    FakeWeb.register_uri(:delete, URI.parse(url), options)
+    stub_request(:delete, URI.parse(url)).
+      with(body: fixture_file(filename), headers: { :content_type => 'application/json' })
   end
 
-  def stub_post(url, filename, headers={})
-      options = { :body => fixture_file(filename), :content_type => 'application/json' }
-      options.merge!(headers)
-    FakeWeb.register_uri(:post, URI.parse(url), options)
+  def stub_post(url, filename, req)
+    stub_request(:post, URI.parse(url)).
+      with(req).
+      to_return(status: 200, body: filename, headers: { :content_type => 'application/json' })
+    # stub_request(:post, "http://api.sailthru.com/purchase").
+    #   with(
+    #     body: {"api_key"=>"my_api_key", "format"=>"json", "json"=>"{\"email\":\"praj@sailthru.com\",\"items\":[{\"qty\":22,\"title\":\"High-Impact Water Bottle\",\"price\":1099,\"id\":\"234\",\"url\":\"http://example.com/234/high-impact-water-bottle\"},{\"qty\":2,\"title\":\"Lorem Ispum\",\"price\":500,\"id\":\"2304\",\"url\":\"http://example.com/2304/lorem-ispum\"}]}", "sig"=>"3843951a6aa178c9db1aab51ffe0db9a"},
+    #     headers: {
+    #           'Accept'=>'*/*',
+    #           'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+    #           'Content-Type'=>'application/x-www-form-urlencoded',
+    #           'User-Agent'=>'Sailthru API Ruby Client 4.3.0'
+    #     }).
+    #   to_return(status: 200, body: "", headers: {})
   end
 
   def stub_exception(url, filename)
-    FakeWeb.register_uri(:any, URI.parse(url), :exception => StandardError)
+    stub_request(:any, URI.parse(url)).to_raise(StandardError)
   end
 
   def create_query_string(secret, params)

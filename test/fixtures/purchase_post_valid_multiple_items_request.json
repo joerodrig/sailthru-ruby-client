@@ -1,0 +1,14 @@
+{
+  "body": {
+    "api_key": "my_api_key",
+    "format": "json",
+    "json": "{\"email\":\"praj@sailthru.com\",\"items\":[{\"qty\":22,\"title\":\"High-Impact Water Bottle\",\"price\":1099,\"id\":\"234\",\"url\":\"http://example.com/234/high-impact-water-bottle\"},{\"qty\":2,\"title\":\"Lorem Ispum\",\"price\":500,\"id\":\"2304\",\"url\":\"http://example.com/2304/lorem-ispum\"}]}",
+    "sig": "3843951a6aa178c9db1aab51ffe0db9a"
+  },
+  "headers": {
+    "Accept": "*/*",
+    "Accept-Encoding": "gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
+    "Content-Type": "application/x-www-form-urlencoded",
+    "User-Agent": "Sailthru API Ruby Client 4.3.0"
+  }
+}

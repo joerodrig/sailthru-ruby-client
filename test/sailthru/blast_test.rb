@@ -8,6 +8,7 @@ class BlastTest < Minitest::Test
       @api_key = 'my_api_key'
       @sailthru_client = Sailthru::Client.new(@api_key, @secret, api_url)
       @api_call_url = sailthru_api_call_url(api_url, 'blast')
+      stub_request(:any, ->(uri) { true })
     end
 
     it "can get the status of a blast when blast_id is valid" do
@@ -57,6 +58,7 @@ class BlastTest < Minitest::Test
       content_html = '<p>Hello World</p>'
       content_text= 'Hello World'
       stub_post(@api_call_url, 'blast_post_invalid_email.json')
+      
       response = @sailthru_client.schedule_blast(blast_name, list, schedule_time, from_name, from_email_invalid, subject, content_html, content_text)
       refute_nil response['error']
       refute_nil response['errormsg']
